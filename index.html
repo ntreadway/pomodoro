@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+        :root {
+            --bg-top: #133b2c;
+            --bg-bottom: #0a1b14;
+            --panel: #1f2f1f;
+            --edge: #d1b04f;
+            --text: #f7f0cf;
+            --timer: #f5d97a;
+            --start: #5f9a52;
+            --pause: #d1b04f;
+            --reset: #a3472d;
+            --active: #3e7f49;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'VT323', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 20% 25%, rgba(179, 219, 130, 0.2), transparent 40%),
+                radial-gradient(circle at 80% 75%, rgba(209, 176, 79, 0.2), transparent 45%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.03) 0,
+                rgba(255, 255, 255, 0.03) 2px,
+                transparent 2px,
+                transparent 5px
+            );
+            opacity: 0.35;
+        }
+
+        .timer-container {
+            width: min(92vw, 520px);
+            background: linear-gradient(180deg, #2a3d27 0%, var(--panel) 100%);
+            padding: 34px 30px;
+            border: 3px solid var(--edge);
+            border-radius: 10px;
+            box-shadow:
+                0 0 0 3px rgba(209, 176, 79, 0.24),
+                0 0 40px rgba(209, 176, 79, 0.25),
+                0 24px 34px rgba(0, 0, 0, 0.48);
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            margin: 0 0 20px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: clamp(1rem, 2.4vw, 1.3rem);
+            line-height: 1.5;
+            letter-spacing: 1px;
+            color: #e7c566;
+            text-shadow: 0 0 12px rgba(231, 197, 102, 0.65);
+        }
+
+        #timerDisplay {
+            font-family: 'Press Start 2P', monospace;
+            font-size: clamp(2rem, 8vw, 3.6rem);
+            margin: 24px 0;
+            letter-spacing: 3px;
+            color: var(--timer);
+            text-shadow:
+                0 0 5px rgba(245, 217, 122, 0.9),
+                0 0 18px rgba(245, 217, 122, 0.65),
+                2px 0 0 rgba(163, 71, 45, 0.35),
+                -2px 0 0 rgba(95, 154, 82, 0.35);
+            animation: flicker 2.8s infinite steps(2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .controls button,
+        .mode-selector button {
+            font-family: 'Press Start 2P', monospace;
+            text-transform: uppercase;
+            border: 2px solid #f2da98;
+            border-radius: 7px;
+            color: #1a160b;
+            cursor: pointer;
+            transition: transform 0.12s ease, filter 0.2s ease;
+            box-shadow: 0 0 10px rgba(242, 218, 152, 0.25);
+        }
+
+        .controls button {
+            padding: 13px 16px;
+            font-size: 0.62rem;
+            letter-spacing: 0.4px;
+        }
+
+        .mode-selector {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mode-selector button {
+            padding: 11px 14px;
+            font-size: 0.56rem;
+            background: #e8dfb8;
+        }
+
+        .mode-selector button.active {
+            background: var(--active);
+            color: #fef7da;
+            text-shadow: 0 0 8px rgba(62, 127, 73, 0.45);
+        }
+
+        .session-meta {
+            margin: 8px 0 14px;
+            text-align: left;
+        }
+
+        .session-meta label {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: #f2da98;
+            letter-spacing: 0.4px;
+        }
+
+        .session-meta input {
+            width: 100%;
+            border: 2px solid #f2da98;
+            border-radius: 7px;
+            background: #f7f0cf;
+            color: #1a160b;
+            padding: 10px 12px;
+            font-size: 1.15rem;
+            font-family: 'VT323', monospace;
+            outline: none;
+        }
+
+        .session-meta input:focus {
+            box-shadow: 0 0 0 3px rgba(242, 218, 152, 0.28);
+        }
+
+        .session-history {
+            border-top: 2px solid rgba(209, 176, 79, 0.4);
+            padding-top: 14px;
+            text-align: left;
+        }
+
+        .session-history h2 {
+            margin: 0 0 8px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.68rem;
+            color: #e7c566;
+            line-height: 1.5;
+        }
+
+        #todayCount {
+            margin: 0 0 8px;
+            font-size: 1.08rem;
+            color: #f7f0cf;
+        }
+
+        #historyList {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 7px;
+            max-height: 180px;
+            overflow: auto;
+        }
+
+        #historyList li {
+            background: rgba(247, 240, 207, 0.1);
+            border: 1px solid rgba(242, 218, 152, 0.34);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 1rem;
+            color: #f5e7bc;
+        }
+
+        #historyList li.empty {
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        #startButton { background-color: var(--start); }
+        #pauseButton { background-color: var(--pause); }
+        #resetButton { background-color: var(--reset); }
+
+        .controls button:hover,
+        .mode-selector button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.06);
+        }
+
+        .controls button:active,
+        .mode-selector button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            45% { opacity: 0.86; }
+            50% { opacity: 0.98; }
+            55% { opacity: 0.9; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="timer-container">
+        <h1>Pomodoro Timer</h1>
+        <div class="mode-selector">
+            <button id="workModeBtn" class="active">Work</button>
+            <button id="breakModeBtn">Break</button>
+        </div>
+        <div class="session-meta">
+            <label for="sessionTitleInput">Session Title</label>
+            <input id="sessionTitleInput" type="text" maxlength="48" placeholder="Deep Work, Study, Planning...">
+        </div>
+        <div id="timerDisplay">25:00</div>
+        <div class="controls">
+            <button id="startButton">Start</button>
+            <button id="pauseButton" disabled>Pause</button>
+            <button id="resetButton">Reset</button>
+        </div>
+        <div class="session-history">
+            <h2>Session History</h2>
+            <p id="todayCount">Today: 0 sessions</p>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+    <button onclick="exportDataAsCSV()" style="background-color: var(--reset); color: var(--text); border: 2px solid var(--edge); border-radius: 7px; padding: 13px 16px; font-family: 'Press Start 2P', monospace; text-transform: uppercase; cursor: pointer; transition: transform 0.12s ease, filter 0.2s ease; box-shadow: 0 0 10px rgba(242, 218, 152, 0.25);">Export Session Data as CSV</button>
+    <footer>
+        <p style="margin-top: 30px; font-size: 0.75rem; color: #666;">Yeti Games, LLC</p>
+    </footer>
+
+
+    <script>
+        let time = 25 * 60; // Start at 25 minutes
+        let isRunning = false;
+        let intervalId = null;
+        let currentMode = 'work'; // 'work' or 'break'
+        let audioContext = null;
+        let activeSessionTitle = 'Untitled Session';
+        const WORK_SECONDS = 25 * 60;
+        const BREAK_SECONDS = 5 * 60;
+        const STORAGE_KEY = 'pomodoroCompletedSessions';
+        let completedSessions = loadCompletedSessions();
+
+        // DOM Elements
+        const display = document.getElementById('timerDisplay');
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const resetButton = document.getElementById('resetButton');
+        const workModeBtn = document.getElementById('workModeBtn');
+        const breakModeBtn = document.getElementById('breakModeBtn');
+        const sessionTitleInput = document.getElementById('sessionTitleInput');
+        const todayCount = document.getElementById('todayCount');
+        const historyList = document.getElementById('historyList');
+
+        // --- Functions ---
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            display.textContent = formatTime(time);
+        }
+
+        function getDateKey(date = new Date()) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateKey(dateKey) {
+            return new Date(`${dateKey}T00:00:00`).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        function loadCompletedSessions() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) return [];
+                const parsed = JSON.parse(stored);
+                if (!Array.isArray(parsed)) return [];
+                return parsed.filter((session) => (
+                    session &&
+                    typeof session.dateKey === 'string' &&
+                    typeof session.title === 'string'
+                ));
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveCompletedSessions() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completedSessions));
+        }
+
+        function recordCompletedWorkSession(title) {
+            completedSessions.push({
+                dateKey: getDateKey(),
+                title: title,
+                completedAt: new Date().toISOString()
+            });
+
+            if (completedSessions.length > 500) {
+                completedSessions = completedSessions.slice(-500);
+            }
+
+            saveCompletedSessions();
+            renderSessionHistory();
+        }
+
+        function renderSessionHistory() {
+            const todayKey = getDateKey();
+            const groupedByDay = completedSessions.reduce((accumulator, session) => {
+                if (!accumulator[session.dateKey]) {
+                    accumulator[session.dateKey] = [];
+                }
+                accumulator[session.dateKey].push(session);
+                return accumulator;
+            }, {});
+
+            const todaySessions = groupedByDay[todayKey] || [];
+            todayCount.textContent = `Today: ${todaySessions.length} session${todaySessions.length === 1 ? '' : 's'}`;
+
+            historyList.innerHTML = '';
+
+            const dateKeys = Object.keys(groupedByDay).sort((a, b) => b.localeCompare(a));
+            if (!dateKeys.length) {
+                const emptyItem = document.createElement('li');
+                emptyItem.className = 'empty';
+                emptyItem.textContent = 'No completed work sessions yet.';
+                historyList.appendChild(emptyItem);
+                return;
+            }
+
+            dateKeys.slice(0, 7).forEach((dateKey) => {
+                const sessions = groupedByDay[dateKey];
+                const titles = sessions.slice(-3).map((session) => session.title).join(', ');
+                const row = document.createElement('li');
+                row.textContent = `${formatDateKey(dateKey)}: ${sessions.length} session${sessions.length === 1 ? '' : 's'}${titles ? ` - ${titles}` : ''}`;
+                historyList.appendChild(row);
+            });
+        }
+
+        function playAlarmSound() {
+            if (!audioContext) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) return;
+                audioContext = new AudioContextClass();
+            }
+
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            const beepPattern = [
+                { freq: 880, start: 0, duration: 0.16 },
+                { freq: 988, start: 0.24, duration: 0.16 },
+                { freq: 1175, start: 0.48, duration: 0.24 }
+            ];
+
+            const baseTime = audioContext.currentTime;
+            beepPattern.forEach((note) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(note.freq, baseTime + note.start);
+
+                gainNode.gain.setValueAtTime(0.0001, baseTime + note.start);
+                gainNode.gain.exponentialRampToValueAtTime(0.24, baseTime + note.start + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, baseTime + note.start + note.duration);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start(baseTime + note.start);
+                oscillator.stop(baseTime + note.start + note.duration + 0.02);
+            });
+        }
+
+        function startTimer() {
+            if (isRunning) return; // Prevent starting if already running
+
+            activeSessionTitle = sessionTitleInput.value.trim() || 'Untitled Session';
+
+            isRunning = true;
+
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            // Update button states
+            startButton.disabled = true;
+            pauseButton.disabled = false;
+
+            // Update mode button states
+            if (currentMode === 'work') {
+                workModeBtn.classList.add('active');
+                breakModeBtn.classList.remove('active');
+            } else {
+                breakModeBtn.classList.add('active');
+                workModeBtn.classList.remove('active');
+            }
+
+            intervalId = setInterval(() => {
+                time--;
+                updateDisplay();
+
+                if (time <= 0) {
+                    clearInterval(intervalId);
+                    isRunning = false;
+                    playAlarmSound();
+
+                    if (currentMode === 'work') {
+                        recordCompletedWorkSession(activeSessionTitle);
+                    }
+
+                    display.textContent = "Time's Up!";
+                    
+                    // Reset button states after time runs out
+                    startButton.disabled = true;
+                    pauseButton.disabled = true;
+                    resetButton.disabled = false;
+                    
+                    // Auto-switch to break mode after work session
+                    if (currentMode === 'work') {
+                        setTimeout(() => {
+                            switchToBreakMode();
+                        }, 1000);
+                    }
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            if (!isRunning) return;
+            
+            clearInterval(intervalId);
+            isRunning = false;
+
+            // Update button states
+            startButton.disabled = false;
+            pauseButton.disabled = true;
+        }
+
+        function resetTimer() {
+            clearInterval(intervalId);
+            isRunning = false;
+            time = WORK_SECONDS; // Reset to default time
+            updateDisplay();
+
+            // Update button states
+            startButton.disabled = false;
+            pauseButton.disabled = true;
+            resetButton.disabled = false;
+        }
+
+        function switchToBreakMode() {
+            currentMode = 'break';
+            time = BREAK_SECONDS; // Set break time to 5 minutes
+            updateDisplay();
+            workModeBtn.classList.remove('active');
+            breakModeBtn.classList.add('active');
+        }
+
+        function switchToWorkMode() {
+            currentMode = 'work';
+            time = WORK_SECONDS; // Set work time to 25 minutes
+            updateDisplay();
+            workModeBtn.classList.add('active');
+            breakModeBtn.classList.remove('active');
+        }
+
+        function exportDataAsCSV() {
+            // Retrieve data from localStorage (assuming you store your session data here)
+            const data = JSON.parse(localStorage.getItem('pomodoroCompletedSessions')) || [];
+
+            if (data.length === 0) {
+                alert("No session data found to export.");
+                return;
+            }
+
+            // Create CSV content
+            let csvContent = "Session Data\n";
+            
+            // Add header row
+            csvContent += "Timestamp,SessionData\n";
+
+            // Add data rows
+            data.forEach(session => {
+                // Convert the session object to a string for CSV
+                const row = [
+                    new Date(session.timestamp).toLocaleString(),
+                    JSON.stringify(session.data)
+                ].join(',');
+                csvContent += row + "\n";
+            });
+
+            // Create a Blob and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "session_data_" + new Date().toISOString().split('T')[0] + ".csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Event Listeners ---
+
+        startButton.addEventListener('click', startTimer);
+        pauseButton.addEventListener('click', pauseTimer);
+        resetButton.addEventListener('click', resetTimer);
+        workModeBtn.addEventListener('click', switchToWorkMode);
+        breakModeBtn.addEventListener('click', switchToBreakMode);
+
+        // Initial setup display
+        updateDisplay();
+        renderSessionHistory();
+
+    </script>
+
+</body>
+</html>
