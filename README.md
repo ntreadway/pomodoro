@@ -14,3 +14,6 @@ A simple, focused timer to help you manage work and breaks using the Pomodoro Te
 
 ## Technology
 This application is built using HTML, CSS, and JavaScript.
+
+## License
+MIT
