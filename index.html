@@ -140,14 +140,14 @@
         }
 
         #testModeBtn {
-            background: #b85b3c;
-            color: #fff4dc;
+            background: #7a6530;
+            color: #f7f0cf;
         }
 
         #testModeBtn.active {
-            background: #df7a2e;
-            color: #fff8df;
-            text-shadow: 0 0 8px rgba(223, 122, 46, 0.45);
+            background: #3e7f49;
+            color: #fef7da;
+            text-shadow: 0 0 8px rgba(62, 127, 73, 0.45);
         }
 
         .session-meta {
@@ -185,12 +185,172 @@
             text-align: left;
         }
 
+        .session-history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .data-tools {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .data-tools button {
+            font-family: 'Press Start 2P', monospace;
+            border: 2px solid var(--edge);
+            border-radius: 7px;
+            background: #2a3d27;
+            color: var(--text);
+            cursor: pointer;
+            padding: 9px 10px;
+            font-size: 0.52rem;
+            box-shadow: 0 0 10px rgba(209, 176, 79, 0.2);
+            transition: transform 0.12s ease, filter 0.2s ease;
+        }
+
+        #exportCsvBtn {
+            background: #7a6530;
+        }
+
+        #pruneOldBtn {
+            background: #5f9a52;
+        }
+
+        #clearDataBtn {
+            background: #a3472d;
+        }
+
         .session-history h2 {
-            margin: 0 0 8px;
+            margin: 0;
             font-family: 'Press Start 2P', monospace;
             font-size: 0.68rem;
             color: #e7c566;
             line-height: 1.5;
+        }
+
+        #viewSessionsBtn {
+            font-family: 'Press Start 2P', monospace;
+            border: 2px solid var(--edge);
+            border-radius: 6px;
+            background: #7a6530;
+            color: var(--text);
+            cursor: pointer;
+            padding: 6px 8px;
+            font-size: 0.42rem;
+            line-height: 1.2;
+        }
+
+        .sessions-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(10, 12, 10, 0.72);
+            z-index: 1000;
+        }
+
+        .sessions-modal.open {
+            display: flex;
+        }
+
+        .sessions-modal-panel {
+            width: min(92vw, 620px);
+            max-height: min(78vh, 720px);
+            overflow: auto;
+            background: linear-gradient(180deg, #2a3d27 0%, var(--panel) 100%);
+            border: 3px solid var(--edge);
+            border-radius: 10px;
+            box-shadow:
+                0 0 0 3px rgba(209, 176, 79, 0.24),
+                0 0 30px rgba(209, 176, 79, 0.22),
+                0 18px 26px rgba(0, 0, 0, 0.48);
+            padding: 18px 16px 14px;
+        }
+
+        .sessions-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .sessions-modal-title {
+            margin: 0;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.62rem;
+            color: #e7c566;
+            line-height: 1.5;
+        }
+
+        .sessions-modal-close {
+            font-family: 'Press Start 2P', monospace;
+            border: 2px solid var(--edge);
+            border-radius: 7px;
+            background: #a3472d;
+            color: var(--text);
+            cursor: pointer;
+            padding: 6px 8px;
+            font-size: 0.45rem;
+        }
+
+        #modalSessionsList {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 7px;
+            max-height: 58vh;
+            overflow: auto;
+        }
+
+        #modalSessionsList li {
+            background: rgba(247, 240, 207, 0.08);
+            border: 1px solid rgba(242, 218, 152, 0.28);
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .session-row-text {
+            min-width: 0;
+        }
+
+        .session-row-title {
+            margin: 0;
+            font-size: 1rem;
+            color: #f5e7bc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .session-row-meta {
+            margin: 2px 0 0;
+            font-size: 0.9rem;
+            color: rgba(247, 240, 207, 0.82);
+        }
+
+        .session-row-actions button {
+            font-family: 'Press Start 2P', monospace;
+            border: 2px solid var(--edge);
+            border-radius: 6px;
+            background: #7a6530;
+            color: var(--text);
+            cursor: pointer;
+            padding: 6px 8px;
+            font-size: 0.45rem;
         }
 
         #todayCount {
@@ -259,7 +419,7 @@
         <div class="mode-selector">
             <button id="workModeBtn" class="active">Work</button>
             <button id="breakModeBtn">Break</button>
-            <!-- <button id="testModeBtn">Test: Off</button> -->
+            <button id="testModeBtn">Test: Off</button>
         </div>
         <div class="session-meta">
             <label for="sessionTitleInput">Session Title</label>
@@ -272,12 +432,30 @@
             <button id="resetButton">Reset</button>
         </div>
         <div class="session-history">
-            <h2>Session History</h2>
+            <div class="session-history-header">
+                <h2>Session History</h2>
+                <button id="viewSessionsBtn" type="button">View Sessions</button>
+            </div>
             <p id="todayCount">Today: 0 sessions</p>
             <ul id="historyList"></ul>
+            <div class="data-tools">
+                <button id="exportCsvBtn">Export CSV</button>
+                <button id="pruneOldBtn">Keep Last 90 Days</button>
+                <button id="clearDataBtn">Clear History</button>
+            </div>
         </div>
     </div>
-    <button onclick="exportDataAsCSV()" style="background-color: var(--reset); color: var(--text); border: 2px solid var(--edge); border-radius: 7px; padding: 13px 16px; font-family: 'Press Start 2P', monospace; text-transform: uppercase; cursor: pointer; transition: transform 0.12s ease, filter 0.2s ease; box-shadow: 0 0 10px rgba(242, 218, 152, 0.25);">Export Session Data as CSV</button>
+
+    <div id="sessionsModal" class="sessions-modal" aria-hidden="true">
+        <div class="sessions-modal-panel" role="dialog" aria-modal="true" aria-labelledby="sessionsModalTitle">
+            <div class="sessions-modal-header">
+                <h2 id="sessionsModalTitle" class="sessions-modal-title">Saved Sessions</h2>
+                <button id="closeSessionsModalBtn" class="sessions-modal-close" type="button">Close</button>
+            </div>
+            <ul id="modalSessionsList"></ul>
+        </div>
+    </div>
+
     <footer>
         <p style="margin-top: 30px; font-size: 0.75rem; color: #666;">Yeti Games, LLC</p>
     </footer>
@@ -305,6 +483,7 @@
         let audioContext = null;
         let activeSessionTitle = 'Untitled Session';
         const STORAGE_KEY = 'pomodoroCompletedSessions';
+        const APP_STATE_KEY = 'pomodoroAppState';
         let completedSessions = loadCompletedSessions();
 
         // DOM Elements
@@ -318,6 +497,13 @@
         const sessionTitleInput = document.getElementById('sessionTitleInput');
         const todayCount = document.getElementById('todayCount');
         const historyList = document.getElementById('historyList');
+        const sessionsModal = document.getElementById('sessionsModal');
+        const viewSessionsBtn = document.getElementById('viewSessionsBtn');
+        const closeSessionsModalBtn = document.getElementById('closeSessionsModalBtn');
+        const modalSessionsList = document.getElementById('modalSessionsList');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const pruneOldBtn = document.getElementById('pruneOldBtn');
+        const clearDataBtn = document.getElementById('clearDataBtn');
 
         // --- Functions ---
 
@@ -353,10 +539,70 @@
             resetButton.disabled = false;
         }
 
-        function toggleTestMode() {
-            isTestMode = !isTestMode;
+        function applyModeButtonState() {
+            if (currentMode === 'work') {
+                workModeBtn.classList.add('active');
+                breakModeBtn.classList.remove('active');
+            } else {
+                breakModeBtn.classList.add('active');
+                workModeBtn.classList.remove('active');
+            }
+        }
+
+        function applyTestModeButtonState() {
+            if (!testModeBtn) return;
             testModeBtn.classList.toggle('active', isTestMode);
             testModeBtn.textContent = isTestMode ? 'Test: On' : 'Test: Off';
+        }
+
+        function saveAppState() {
+            const appState = {
+                currentMode,
+                time,
+                completedWorkStreak,
+                isTestMode,
+                activeSessionTitle,
+                sessionTitleInputValue: sessionTitleInput.value
+            };
+            localStorage.setItem(APP_STATE_KEY, JSON.stringify(appState));
+        }
+
+        function loadAppState() {
+            try {
+                const raw = localStorage.getItem(APP_STATE_KEY);
+                if (!raw) return;
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return;
+
+                if (typeof parsed.isTestMode === 'boolean') {
+                    isTestMode = parsed.isTestMode;
+                }
+
+                if (parsed.currentMode === 'work' || parsed.currentMode === 'break') {
+                    currentMode = parsed.currentMode;
+                }
+                if (typeof parsed.time === 'number' && Number.isFinite(parsed.time) && parsed.time > 0) {
+                    time = Math.floor(parsed.time);
+                } else {
+                    time = currentMode === 'work' ? getWorkSeconds() : getShortBreakSeconds();
+                }
+                if (typeof parsed.completedWorkStreak === 'number' && Number.isFinite(parsed.completedWorkStreak)) {
+                    completedWorkStreak = Math.max(0, Math.floor(parsed.completedWorkStreak));
+                }
+                if (typeof parsed.activeSessionTitle === 'string') {
+                    activeSessionTitle = parsed.activeSessionTitle;
+                }
+                if (typeof parsed.sessionTitleInputValue === 'string') {
+                    sessionTitleInput.value = parsed.sessionTitleInputValue;
+                }
+            } catch (error) {
+                // Ignore invalid persisted app state
+            }
+        }
+
+        function toggleTestMode() {
+            isTestMode = !isTestMode;
+            applyTestModeButtonState();
 
             if (!isRunning) {
                 if (currentMode === 'work') {
@@ -366,6 +612,8 @@
                 }
                 updateDisplay();
             }
+
+            saveAppState();
         }
 
         function getDateKey(date = new Date()) {
@@ -383,17 +631,46 @@
             });
         }
 
+        function createSessionId() {
+            return `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        }
+
+        function normalizeSession(session) {
+            if (!session || typeof session !== 'object') return null;
+            if (typeof session.dateKey !== 'string' || typeof session.title !== 'string') return null;
+
+            const normalized = {
+                id: typeof session.id === 'string' && session.id ? session.id : createSessionId(),
+                dateKey: session.dateKey,
+                title: session.title,
+                completedAt: typeof session.completedAt === 'string' && session.completedAt
+                    ? session.completedAt
+                    : `${session.dateKey}T12:00:00.000Z`
+            };
+
+            return normalized;
+        }
+
+        function formatCompletedAt(completedAt) {
+            const date = new Date(completedAt);
+            if (Number.isNaN(date.getTime())) return 'Unknown time';
+            return date.toLocaleString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
         function loadCompletedSessions() {
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (!stored) return [];
                 const parsed = JSON.parse(stored);
                 if (!Array.isArray(parsed)) return [];
-                return parsed.filter((session) => (
-                    session &&
-                    typeof session.dateKey === 'string' &&
-                    typeof session.title === 'string'
-                ));
+                return parsed
+                    .map(normalizeSession)
+                    .filter((session) => Boolean(session));
             } catch (error) {
                 return [];
             }
@@ -405,6 +682,7 @@
 
         function recordCompletedWorkSession(title) {
             completedSessions.push({
+                id: createSessionId(),
                 dateKey: getDateKey(),
                 title: title,
                 completedAt: new Date().toISOString()
@@ -414,6 +692,86 @@
                 completedSessions = completedSessions.slice(-500);
             }
 
+            saveCompletedSessions();
+            renderSessionHistory();
+        }
+
+        function getSortedSessions() {
+            return [...completedSessions].sort((a, b) => {
+                const aTime = new Date(a.completedAt).getTime();
+                const bTime = new Date(b.completedAt).getTime();
+                return bTime - aTime;
+            });
+        }
+
+        function renderSessionsModal() {
+            if (!modalSessionsList) return;
+
+            modalSessionsList.innerHTML = '';
+            if (!completedSessions.length) {
+                const emptyItem = document.createElement('li');
+                emptyItem.className = 'empty';
+                emptyItem.textContent = 'No sessions to show.';
+                modalSessionsList.appendChild(emptyItem);
+                return;
+            }
+
+            const sortedSessions = getSortedSessions();
+
+            sortedSessions.forEach((session) => {
+                const row = document.createElement('li');
+
+                const textWrap = document.createElement('div');
+                textWrap.className = 'session-row-text';
+
+                const title = document.createElement('p');
+                title.className = 'session-row-title';
+                title.textContent = session.title || 'Untitled Session';
+
+                const meta = document.createElement('p');
+                meta.className = 'session-row-meta';
+                meta.textContent = formatCompletedAt(session.completedAt);
+
+                textWrap.appendChild(title);
+                textWrap.appendChild(meta);
+
+                const actions = document.createElement('div');
+                actions.className = 'session-row-actions';
+
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit';
+                editBtn.type = 'button';
+                editBtn.dataset.sessionId = session.id;
+
+                actions.appendChild(editBtn);
+                row.appendChild(textWrap);
+                row.appendChild(actions);
+                modalSessionsList.appendChild(row);
+            });
+        }
+
+        function openSessionsModal() {
+            renderSessionsModal();
+            sessionsModal.classList.add('open');
+            sessionsModal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeSessionsModal() {
+            sessionsModal.classList.remove('open');
+            sessionsModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function pruneOldSessions(daysToKeep = 90) {
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - daysToKeep);
+            const cutoffKey = getDateKey(cutoff);
+            completedSessions = completedSessions.filter((session) => session.dateKey >= cutoffKey);
+            saveCompletedSessions();
+            renderSessionHistory();
+        }
+
+        function clearAllSessionData() {
+            completedSessions = [];
             saveCompletedSessions();
             renderSessionHistory();
         }
@@ -504,13 +862,7 @@
             pauseButton.disabled = false;
 
             // Update mode button states
-            if (currentMode === 'work') {
-                workModeBtn.classList.add('active');
-                breakModeBtn.classList.remove('active');
-            } else {
-                breakModeBtn.classList.add('active');
-                workModeBtn.classList.remove('active');
-            }
+            applyModeButtonState();
 
             intervalId = setInterval(() => {
                 time--;
@@ -530,7 +882,11 @@
                         switchToWorkMode();
                     }
                 }
+
+                saveAppState();
             }, 1000);
+
+            saveAppState();
         }
 
         function pauseTimer() {
@@ -542,6 +898,7 @@
             // Update button states
             startButton.disabled = false;
             pauseButton.disabled = true;
+            saveAppState();
         }
 
         function resetTimer() {
@@ -550,6 +907,7 @@
             time = getWorkSeconds();
             updateDisplay();
             setIdleButtonState();
+            saveAppState();
         }
 
         function switchToBreakMode(breakDuration = getShortBreakSeconds()) {
@@ -561,6 +919,7 @@
             workModeBtn.classList.remove('active');
             breakModeBtn.classList.add('active');
             setIdleButtonState();
+            saveAppState();
         }
 
         function switchToWorkMode() {
@@ -572,6 +931,7 @@
             workModeBtn.classList.add('active');
             breakModeBtn.classList.remove('active');
             setIdleButtonState();
+            saveAppState();
         }
 
         function exportDataAsCSV() {
@@ -585,16 +945,15 @@
 
             // Create CSV content
             let csvContent = "Session Data\n";
-            
-            // Add header row
-            csvContent += "Timestamp,SessionData\n";
+            csvContent += "Date,Title,Completed At\n";
 
             // Add data rows
             data.forEach(session => {
-                // Convert the session object to a string for CSV
+                const completedAt = session.completedAt ? new Date(session.completedAt).toLocaleString() : '';
                 const row = [
-                    new Date(session.timestamp).toLocaleString(),
-                    JSON.stringify(session.data)
+                    session.dateKey || '',
+                    `"${(session.title || '').replace(/"/g, '""')}"`,
+                    `"${completedAt.replace(/"/g, '""')}"`
                 ].join(',');
                 csvContent += row + "\n";
             });
@@ -618,15 +977,64 @@
         resetButton.addEventListener('click', resetTimer);
         workModeBtn.addEventListener('click', switchToWorkMode);
         breakModeBtn.addEventListener('click', switchToBreakMode);
-        testModeBtn.addEventListener('click', toggleTestMode);
+        if (testModeBtn) {
+            testModeBtn.addEventListener('click', toggleTestMode);
+        }
+        exportCsvBtn.addEventListener('click', exportDataAsCSV);
+        pruneOldBtn.addEventListener('click', () => pruneOldSessions(90));
+        clearDataBtn.addEventListener('click', () => {
+            const confirmed = window.confirm('Clear all saved session history?');
+            if (confirmed) {
+                clearAllSessionData();
+            }
+        });
+
+        viewSessionsBtn.addEventListener('click', openSessionsModal);
+        closeSessionsModalBtn.addEventListener('click', closeSessionsModal);
+        sessionsModal.addEventListener('click', (event) => {
+            if (event.target === sessionsModal) {
+                closeSessionsModal();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && sessionsModal.classList.contains('open')) {
+                closeSessionsModal();
+            }
+        });
+
+        modalSessionsList.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLButtonElement)) return;
+
+            const sessionId = target.dataset.sessionId;
+            if (!sessionId) return;
+
+            const index = completedSessions.findIndex((session) => session.id === sessionId);
+            if (index === -1) return;
+
+            const currentTitle = completedSessions[index].title || 'Untitled Session';
+            const updatedTitle = window.prompt('Edit session title:', currentTitle);
+            if (updatedTitle === null) return;
+
+            const nextTitle = updatedTitle.trim() || 'Untitled Session';
+            completedSessions[index].title = nextTitle;
+            saveCompletedSessions();
+            renderSessionHistory();
+            renderSessionsModal();
+        });
 
         sessionTitleInput.addEventListener('input', () => {
             activeSessionTitle = sessionTitleInput.value.trim() || 'Untitled Session';
+            saveAppState();
         });
 
         // Initial setup display
+        loadAppState();
+        applyTestModeButtonState();
+        applyModeButtonState();
         updateDisplay();
         renderSessionHistory();
+        setIdleButtonState();
 
     </script>
 
