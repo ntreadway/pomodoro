@@ -18,6 +18,19 @@
             --pause: #d1b04f;
             --reset: #a3472d;
             --active: #3e7f49;
+            --card-top: #2a3d27;
+            --title: #e7c566;
+            --title-glow: rgba(231, 197, 102, 0.65);
+            --control-border: #f2da98;
+            --control-text: #1a160b;
+            --control-base: #e8dfb8;
+            --label: #f2da98;
+            --input-bg: #f7f0cf;
+            --input-text: #1a160b;
+            --list-bg: rgba(247, 240, 207, 0.1);
+            --list-border: rgba(242, 218, 152, 0.34);
+            --list-text: #f5e7bc;
+            --modal-overlay: rgba(10, 12, 10, 0.72);
         }
 
         * {
@@ -58,7 +71,7 @@
 
         .timer-container {
             width: min(92vw, 520px);
-            background: linear-gradient(180deg, #2a3d27 0%, var(--panel) 100%);
+            background: linear-gradient(180deg, var(--card-top) 0%, var(--panel) 100%);
             padding: 34px 30px;
             border: 3px solid var(--edge);
             border-radius: 10px;
@@ -76,8 +89,37 @@
             font-size: clamp(1rem, 2.4vw, 1.3rem);
             line-height: 1.5;
             letter-spacing: 1px;
-            color: #e7c566;
-            text-shadow: 0 0 12px rgba(231, 197, 102, 0.65);
+            color: var(--title);
+            text-shadow: 0 0 12px var(--title-glow);
+        }
+
+        .theme-nav {
+            width: min(92vw, 760px);
+            margin: 14px 0 6px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            font-family: 'Press Start 2P', monospace;
+            border: 2px solid var(--edge);
+            border-radius: 7px;
+            background: var(--control-base);
+            color: var(--control-text);
+            cursor: pointer;
+            padding: 8px 10px;
+            font-size: 0.48rem;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(209, 176, 79, 0.2);
+            transition: transform 0.12s ease, filter 0.2s ease;
+        }
+
+        .theme-btn.active {
+            background: var(--active);
+            color: var(--text);
+            text-shadow: 0 0 8px rgba(62, 127, 73, 0.45);
         }
 
         #timerDisplay {
@@ -106,12 +148,12 @@
         .mode-selector button {
             font-family: 'Press Start 2P', monospace;
             text-transform: uppercase;
-            border: 2px solid #f2da98;
+            border: 2px solid var(--control-border);
             border-radius: 7px;
-            color: #1a160b;
+            color: var(--control-text);
             cursor: pointer;
             transition: transform 0.12s ease, filter 0.2s ease;
-            box-shadow: 0 0 10px rgba(242, 218, 152, 0.25);
+            box-shadow: 0 0 10px rgba(209, 176, 79, 0.2);
         }
 
         .controls button {
@@ -130,7 +172,7 @@
         .mode-selector button {
             padding: 11px 14px;
             font-size: 0.56rem;
-            background: #e8dfb8;
+            background: var(--control-base);
         }
 
         .mode-selector button.active {
@@ -159,16 +201,16 @@
             display: block;
             font-size: 0.95rem;
             margin-bottom: 6px;
-            color: #f2da98;
+            color: var(--label);
             letter-spacing: 0.4px;
         }
 
         .session-meta input {
             width: 100%;
-            border: 2px solid #f2da98;
+            border: 2px solid var(--control-border);
             border-radius: 7px;
-            background: #f7f0cf;
-            color: #1a160b;
+            background: var(--input-bg);
+            color: var(--input-text);
             padding: 10px 12px;
             font-size: 1.15rem;
             font-family: 'VT323', monospace;
@@ -230,7 +272,7 @@
             margin: 0;
             font-family: 'Press Start 2P', monospace;
             font-size: 0.68rem;
-            color: #e7c566;
+            color: var(--title);
             line-height: 1.5;
         }
 
@@ -253,7 +295,7 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
-            background: rgba(10, 12, 10, 0.72);
+            background: var(--modal-overlay);
             z-index: 1000;
         }
 
@@ -265,7 +307,7 @@
             width: min(92vw, 620px);
             max-height: min(78vh, 720px);
             overflow: auto;
-            background: linear-gradient(180deg, #2a3d27 0%, var(--panel) 100%);
+            background: linear-gradient(180deg, var(--card-top) 0%, var(--panel) 100%);
             border: 3px solid var(--edge);
             border-radius: 10px;
             box-shadow:
@@ -287,7 +329,7 @@
             margin: 0;
             font-family: 'Press Start 2P', monospace;
             font-size: 0.62rem;
-            color: #e7c566;
+            color: var(--title);
             line-height: 1.5;
         }
 
@@ -313,8 +355,8 @@
         }
 
         #modalSessionsList li {
-            background: rgba(247, 240, 207, 0.08);
-            border: 1px solid rgba(242, 218, 152, 0.28);
+            background: var(--list-bg);
+            border: 1px solid var(--list-border);
             border-radius: 6px;
             padding: 8px 10px;
             display: flex;
@@ -330,7 +372,7 @@
         .session-row-title {
             margin: 0;
             font-size: 1rem;
-            color: #f5e7bc;
+            color: var(--list-text);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -356,7 +398,7 @@
         #todayCount {
             margin: 0 0 8px;
             font-size: 1.08rem;
-            color: #f7f0cf;
+            color: var(--text);
         }
 
         #historyList {
@@ -370,12 +412,12 @@
         }
 
         #historyList li {
-            background: rgba(247, 240, 207, 0.1);
-            border: 1px solid rgba(242, 218, 152, 0.34);
+            background: var(--list-bg);
+            border: 1px solid var(--list-border);
             border-radius: 6px;
             padding: 8px 10px;
             font-size: 1rem;
-            color: #f5e7bc;
+            color: var(--list-text);
         }
 
         #historyList li.empty {
@@ -388,13 +430,15 @@
         #resetButton { background-color: var(--reset); }
 
         .controls button:hover,
-        .mode-selector button:hover {
+        .mode-selector button:hover,
+        .theme-btn:hover {
             transform: translateY(-2px);
             filter: brightness(1.06);
         }
 
         .controls button:active,
-        .mode-selector button:active {
+        .mode-selector button:active,
+        .theme-btn:active {
             transform: translateY(1px);
         }
 
@@ -413,6 +457,13 @@
     </style>
 </head>
 <body>
+
+    <nav class="theme-nav" aria-label="Theme selector">
+        <button class="theme-btn active" type="button" data-theme="zelda">Legend of Zelda</button>
+        <button class="theme-btn" type="button" data-theme="mario">Super Mario Bros</button>
+        <button class="theme-btn" type="button" data-theme="donkeykong">Donkey Kong</button>
+        <button class="theme-btn" type="button" data-theme="castlevania">Castlevania</button>
+    </nav>
 
     <div class="timer-container">
         <h1>Pomodoro Timer</h1>
@@ -473,8 +524,111 @@
             shortBreak: 5,
             longBreak: 8
         };
+        const THEMES = {
+            zelda: {
+                bgTop: '#133b2c',
+                bgBottom: '#0a1b14',
+                panel: '#1f2f1f',
+                edge: '#d1b04f',
+                text: '#f7f0cf',
+                timer: '#f5d97a',
+                start: '#5f9a52',
+                pause: '#d1b04f',
+                reset: '#a3472d',
+                active: '#3e7f49',
+                cardTop: '#2a3d27',
+                title: '#e7c566',
+                titleGlow: 'rgba(231, 197, 102, 0.65)',
+                controlBorder: '#f2da98',
+                controlText: '#1a160b',
+                controlBase: '#e8dfb8',
+                label: '#f2da98',
+                inputBg: '#f7f0cf',
+                inputText: '#1a160b',
+                listBg: 'rgba(247, 240, 207, 0.1)',
+                listBorder: 'rgba(242, 218, 152, 0.34)',
+                listText: '#f5e7bc',
+                modalOverlay: 'rgba(10, 12, 10, 0.72)'
+            },
+            mario: {
+                bgTop: '#7ec8ff',
+                bgBottom: '#2f6cc8',
+                panel: '#e63b2f',
+                edge: '#ffd34d',
+                text: '#fff8db',
+                timer: '#fff3a2',
+                start: '#32a852',
+                pause: '#ffd34d',
+                reset: '#cf3d2b',
+                active: '#2f8de4',
+                cardTop: '#ff5a45',
+                title: '#fff3a2',
+                titleGlow: 'rgba(255, 211, 77, 0.7)',
+                controlBorder: '#ffe07d',
+                controlText: '#5c2409',
+                controlBase: '#ffdca0',
+                label: '#fff3a2',
+                inputBg: '#fff7d8',
+                inputText: '#5c2409',
+                listBg: 'rgba(255, 248, 219, 0.14)',
+                listBorder: 'rgba(255, 224, 125, 0.5)',
+                listText: '#fff8db',
+                modalOverlay: 'rgba(24, 35, 81, 0.62)'
+            },
+            donkeykong: {
+                bgTop: '#0c0f15',
+                bgBottom: '#040508',
+                panel: '#5a1720',
+                edge: '#5ec9ff',
+                text: '#ffe9a8',
+                timer: '#ffd84a',
+                start: '#4ea44a',
+                pause: '#5ec9ff',
+                reset: '#b13a2a',
+                active: '#f04a3a',
+                cardTop: '#7a1f2b',
+                title: '#ffd84a',
+                titleGlow: 'rgba(255, 216, 74, 0.72)',
+                controlBorder: '#6dd6ff',
+                controlText: '#241508',
+                controlBase: '#ffd27a',
+                label: '#ffd84a',
+                inputBg: '#ffe8b7',
+                inputText: '#2b1809',
+                listBg: 'rgba(240, 74, 58, 0.18)',
+                listBorder: 'rgba(109, 214, 255, 0.52)',
+                listText: '#ffe9a8',
+                modalOverlay: 'rgba(2, 3, 5, 0.82)'
+            },
+            castlevania: {
+                bgTop: '#18263f',
+                bgBottom: '#0a111f',
+                panel: '#151f34',
+                edge: '#9faec8',
+                text: '#e5e9f2',
+                timer: '#d9e2ff',
+                start: '#3a6e60',
+                pause: '#9faec8',
+                reset: '#8f2b3c',
+                active: '#9e2f4d',
+                cardTop: '#1f2d49',
+                title: '#c8d4ec',
+                titleGlow: 'rgba(200, 212, 236, 0.62)',
+                controlBorder: '#b8c5dd',
+                controlText: '#1c2437',
+                controlBase: '#dde3f0',
+                label: '#c8d4ec',
+                inputBg: '#edf1f9',
+                inputText: '#1c2437',
+                listBg: 'rgba(229, 233, 242, 0.1)',
+                listBorder: 'rgba(184, 197, 221, 0.42)',
+                listText: '#e5e9f2',
+                modalOverlay: 'rgba(7, 12, 24, 0.76)'
+            }
+        };
 
         let isTestMode = false;
+        let selectedTheme = 'zelda';
         let completedWorkStreak = 0;
         let time = DEFAULT_DURATIONS.work;
         let isRunning = false;
@@ -504,6 +658,7 @@
         const exportCsvBtn = document.getElementById('exportCsvBtn');
         const pruneOldBtn = document.getElementById('pruneOldBtn');
         const clearDataBtn = document.getElementById('clearDataBtn');
+        const themeButtons = document.querySelectorAll('.theme-btn');
 
         // --- Functions ---
 
@@ -561,10 +716,45 @@
                 time,
                 completedWorkStreak,
                 isTestMode,
+                selectedTheme,
                 activeSessionTitle,
                 sessionTitleInputValue: sessionTitleInput.value
             };
             localStorage.setItem(APP_STATE_KEY, JSON.stringify(appState));
+        }
+
+        function applyTheme(themeName) {
+            const theme = THEMES[themeName] || THEMES.zelda;
+            selectedTheme = THEMES[themeName] ? themeName : 'zelda';
+            const root = document.documentElement;
+
+            root.style.setProperty('--bg-top', theme.bgTop);
+            root.style.setProperty('--bg-bottom', theme.bgBottom);
+            root.style.setProperty('--panel', theme.panel);
+            root.style.setProperty('--edge', theme.edge);
+            root.style.setProperty('--text', theme.text);
+            root.style.setProperty('--timer', theme.timer);
+            root.style.setProperty('--start', theme.start);
+            root.style.setProperty('--pause', theme.pause);
+            root.style.setProperty('--reset', theme.reset);
+            root.style.setProperty('--active', theme.active);
+            root.style.setProperty('--card-top', theme.cardTop);
+            root.style.setProperty('--title', theme.title);
+            root.style.setProperty('--title-glow', theme.titleGlow);
+            root.style.setProperty('--control-border', theme.controlBorder);
+            root.style.setProperty('--control-text', theme.controlText);
+            root.style.setProperty('--control-base', theme.controlBase);
+            root.style.setProperty('--label', theme.label);
+            root.style.setProperty('--input-bg', theme.inputBg);
+            root.style.setProperty('--input-text', theme.inputText);
+            root.style.setProperty('--list-bg', theme.listBg);
+            root.style.setProperty('--list-border', theme.listBorder);
+            root.style.setProperty('--list-text', theme.listText);
+            root.style.setProperty('--modal-overlay', theme.modalOverlay);
+
+            themeButtons.forEach((button) => {
+                button.classList.toggle('active', button.dataset.theme === selectedTheme);
+            });
         }
 
         function loadAppState() {
@@ -576,6 +766,9 @@
 
                 if (typeof parsed.isTestMode === 'boolean') {
                     isTestMode = parsed.isTestMode;
+                }
+                if (typeof parsed.selectedTheme === 'string' && THEMES[parsed.selectedTheme]) {
+                    selectedTheme = parsed.selectedTheme;
                 }
 
                 if (parsed.currentMode === 'work' || parsed.currentMode === 'break') {
@@ -980,6 +1173,15 @@
         if (testModeBtn) {
             testModeBtn.addEventListener('click', toggleTestMode);
         }
+
+        themeButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const themeName = button.dataset.theme;
+                applyTheme(themeName);
+                saveAppState();
+            });
+        });
+
         exportCsvBtn.addEventListener('click', exportDataAsCSV);
         pruneOldBtn.addEventListener('click', () => pruneOldSessions(90));
         clearDataBtn.addEventListener('click', () => {
@@ -1030,6 +1232,7 @@
 
         // Initial setup display
         loadAppState();
+        applyTheme(selectedTheme);
         applyTestModeButtonState();
         applyModeButtonState();
         updateDisplay();
