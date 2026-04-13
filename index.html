@@ -1104,10 +1104,14 @@
         }
 
         function switchToBreakMode(breakDuration = getShortBreakSeconds()) {
+            const nextBreakDuration = typeof breakDuration === 'number' && Number.isFinite(breakDuration)
+                ? breakDuration
+                : getShortBreakSeconds();
+
             clearInterval(intervalId);
             isRunning = false;
             currentMode = 'break';
-            time = breakDuration;
+            time = nextBreakDuration;
             updateDisplay();
             workModeBtn.classList.remove('active');
             breakModeBtn.classList.add('active');
