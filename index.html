@@ -663,6 +663,10 @@
         // --- Functions ---
 
         function formatTime(seconds) {
+            if (!Number.isFinite(seconds)) {
+                return '00:00';
+            }
+
             const minutes = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
@@ -1172,8 +1176,8 @@
         startButton.addEventListener('click', startTimer);
         pauseButton.addEventListener('click', pauseTimer);
         resetButton.addEventListener('click', resetTimer);
-        workModeBtn.addEventListener('click', switchToWorkMode);
-        breakModeBtn.addEventListener('click', switchToBreakMode);
+        workModeBtn.addEventListener('click', () => switchToWorkMode());
+        breakModeBtn.addEventListener('click', () => switchToBreakMode());
         if (testModeBtn) {
             testModeBtn.addEventListener('click', toggleTestMode);
         }
